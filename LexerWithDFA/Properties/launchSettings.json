@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LexerWithDFA": {
+      "commandName": "Project",
+      "commandLineArgs": "$(SolutionDir)\\sample_source\\tokens.txt"
+    }
+  }
+}
