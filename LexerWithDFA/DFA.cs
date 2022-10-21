@@ -12,7 +12,7 @@ namespace LexerWithDFA
 		private int _state;
 		private bool _isError;
 
-		public static DFA GenerateString(TokenType tokenType, string str, bool ignoreCase)
+		public static DFA GenerateString(string str, bool ignoreCase)
 		{
 			if (string.IsNullOrEmpty(str))
 			{
