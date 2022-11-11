@@ -4,14 +4,14 @@ using System.Linq;
 
 namespace LexerWithDFA
 {
-	using DFATransitionMap = IDictionary<int, IDictionary<Character, int>>;
+	using DfaTransitionMap = IDictionary<int, IDictionary<Character, int>>;
 
-	internal class DFA
+	public class Dfa
 	{
 		private int _state;
 		private bool _isError;
 
-		public static DFA GenerateString(string str, bool ignoreCase)
+		public static Dfa GenerateString(string str, bool ignoreCase)
 		{
 			if (string.IsNullOrEmpty(str))
 			{
@@ -19,7 +19,7 @@ namespace LexerWithDFA
 				throw new ArgumentException(ErrMsg, nameof(str));
 			}
 
-			DFATransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>();
+			DfaTransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>();
 			for (int i = 0; i < str.Length; i++)
 			{
 				transitionMap.Add(
@@ -27,12 +27,12 @@ namespace LexerWithDFA
 					new Dictionary<Character, int> { { new Character(CharacterType.Literal, str[i]), i + 1 } }
 				);
 			}
-			return new DFA(0, new int[] { str.Length }, transitionMap, ignoreCase);
+			return new Dfa(0, new int[] { str.Length }, transitionMap, ignoreCase);
 		}
 
-		public static DFA GenerateIdentifier()
+		public static Dfa GenerateIdentifier()
 		{
-			DFATransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>
+			DfaTransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>
 			{
 				{
 					0,
@@ -47,12 +47,12 @@ namespace LexerWithDFA
 					}
 				},
 			};
-			return new DFA(0, new int[] { 1 }, transitionMap, false);
+			return new Dfa(0, new int[] { 1 }, transitionMap, false);
 		}
 
-		public static DFA GenerateIntegerNumber()
+		public static Dfa GenerateIntegerNumber()
 		{
-			DFATransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>
+			DfaTransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>
 			{
 				{
 					0,
@@ -78,12 +78,12 @@ namespace LexerWithDFA
 					}
 				},
 			};
-			return new DFA(0, new int[] { 2, 3 }, transitionMap, false);
+			return new Dfa(0, new int[] { 2, 3 }, transitionMap, false);
 		}
 
-		public static DFA GenerateLineComment()
+		public static Dfa GenerateLineComment()
 		{
-			DFATransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>
+			DfaTransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>
 			{
 				{
 					0,
@@ -104,12 +104,12 @@ namespace LexerWithDFA
 					}
 				},
 			};
-			return new DFA(0, new int[] { 2 }, transitionMap, false);
+			return new Dfa(0, new int[] { 2 }, transitionMap, false);
 		}
 
-		public static DFA GenerateBlockComment()
+		public static Dfa GenerateBlockComment()
 		{
-			DFATransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>
+			DfaTransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>
 			{
 				{
 					0 ,
@@ -138,10 +138,10 @@ namespace LexerWithDFA
 					}
 				},
 			};
-			return new DFA(0, new int[] { 4 }, transitionMap, false);
+			return new Dfa(0, new int[] { 4 }, transitionMap, false);
 		}
 
-		public DFA(int startNode, IEnumerable<int> acceptingNodeSet, DFATransitionMap transitionMap, bool ignoreCase)
+		public Dfa(int startNode, IEnumerable<int> acceptingNodeSet, DfaTransitionMap transitionMap, bool ignoreCase)
 		{
 			StartNode = startNode;
 			AcceptingNodeSet = acceptingNodeSet;
@@ -167,7 +167,7 @@ namespace LexerWithDFA
 			private set;
 		}
 
-		public DFATransitionMap TransitionMap
+		public DfaTransitionMap TransitionMap
 		{
 			get;
 			private set;
@@ -190,7 +190,7 @@ namespace LexerWithDFA
 			return result.Distinct().OrderBy(_ => _);
 		}
 
-		public static DFATransitionMap AddTransition(DFATransitionMap transitionMap, int node, Character input, int dest)
+		public static DfaTransitionMap AddTransition(DfaTransitionMap transitionMap, int node, Character input, int dest)
 		{
 			if (transitionMap.ContainsKey(node))
 			{
@@ -305,7 +305,7 @@ namespace LexerWithDFA
 			return !result.Item1;
 		}
 
-		private static Tuple<bool, int> GetNext(char ch, int current, DFATransitionMap transitionMap, bool isError)
+		private static Tuple<bool, int> GetNext(char ch, int current, DfaTransitionMap transitionMap, bool isError)
 		{
 			if (isError)
 			{

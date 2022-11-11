@@ -33,37 +33,37 @@ namespace LexerWithDFA
 		private int _nCr;
 		private int _nCrLf;
 
-		private IEnumerable<Tuple<DFA, TokenType?>> _automata;
-		private readonly DFA _comLine;
-		private readonly DFA _comBlock;
-		private readonly DFA _literalInt;
-		private readonly DFA _identifier;
-		private readonly DFA _keywordBegin;
-		private readonly DFA _keywordConst;
-		private readonly DFA _keywordDo;
-		private readonly DFA _keywordEnd;
-		private readonly DFA _keywordFunction;
-		private readonly DFA _keywordIf;
-		private readonly DFA _keywordReturn;
-		private readonly DFA _keywordThen;
-		private readonly DFA _keywordVar;
-		private readonly DFA _keywordWhile;
-		private readonly DFA _puncSemicolon;
-		private readonly DFA _puncPeriod;
-		private readonly DFA _puncComma;
-		private readonly DFA _puncLeftParen;
-		private readonly DFA _puncRightParen;
-		private readonly DFA _puncColonEqual;
-		private readonly DFA _puncEqual;
-		private readonly DFA _puncLTGT;
-		private readonly DFA _puncLT;
-		private readonly DFA _puncLE;
-		private readonly DFA _puncGT;
-		private readonly DFA _puncGE;
-		private readonly DFA _puncPlus;
-		private readonly DFA _puncMinus;
-		private readonly DFA _puncAsterisk;
-		private readonly DFA _puncSlash;
+		private IEnumerable<Tuple<Dfa, TokenType?>> _automata;
+		private readonly Dfa _comLine;
+		private readonly Dfa _comBlock;
+		private readonly Dfa _literalInt;
+		private readonly Dfa _identifier;
+		private readonly Dfa _keywordBegin;
+		private readonly Dfa _keywordConst;
+		private readonly Dfa _keywordDo;
+		private readonly Dfa _keywordEnd;
+		private readonly Dfa _keywordFunction;
+		private readonly Dfa _keywordIf;
+		private readonly Dfa _keywordReturn;
+		private readonly Dfa _keywordThen;
+		private readonly Dfa _keywordVar;
+		private readonly Dfa _keywordWhile;
+		private readonly Dfa _puncSemicolon;
+		private readonly Dfa _puncPeriod;
+		private readonly Dfa _puncComma;
+		private readonly Dfa _puncLeftParen;
+		private readonly Dfa _puncRightParen;
+		private readonly Dfa _puncColonEqual;
+		private readonly Dfa _puncEqual;
+		private readonly Dfa _puncLTGT;
+		private readonly Dfa _puncLT;
+		private readonly Dfa _puncLE;
+		private readonly Dfa _puncGT;
+		private readonly Dfa _puncGE;
+		private readonly Dfa _puncPlus;
+		private readonly Dfa _puncMinus;
+		private readonly Dfa _puncAsterisk;
+		private readonly Dfa _puncSlash;
 
 		public LexerWithDFA(string filePath)
 		{
@@ -76,39 +76,39 @@ namespace LexerWithDFA
 			_nCr = 0;
 			_nCrLf = 0;
 
-			_comLine = DFA.GenerateLineComment();
-			_comBlock = DFA.GenerateBlockComment();
+			_comLine = Dfa.GenerateLineComment();
+			_comBlock = Dfa.GenerateBlockComment();
 
 			// tokens
 			const bool IgnoreCase = false;
-			_literalInt = DFA.GenerateIntegerNumber();
-			_identifier = DFA.GenerateIdentifier();
-			_keywordBegin = DFA.GenerateString("begin", IgnoreCase);
-			_keywordConst = DFA.GenerateString("const", IgnoreCase);
-			_keywordDo = DFA.GenerateString("do", IgnoreCase);
-			_keywordEnd = DFA.GenerateString("end", IgnoreCase);
-			_keywordFunction = DFA.GenerateString("function", IgnoreCase);
-			_keywordIf = DFA.GenerateString("if", IgnoreCase);
-			_keywordReturn = DFA.GenerateString("return", IgnoreCase);
-			_keywordThen = DFA.GenerateString("then", IgnoreCase);
-			_keywordVar = DFA.GenerateString("var", IgnoreCase);
-			_keywordWhile = DFA.GenerateString("while", IgnoreCase);
-			_puncSemicolon = DFA.GenerateString(";", IgnoreCase);
-			_puncPeriod = DFA.GenerateString(".", IgnoreCase);
-			_puncComma = DFA.GenerateString(",", IgnoreCase);
-			_puncLeftParen = DFA.GenerateString("(", IgnoreCase);
-			_puncRightParen = DFA.GenerateString(")", IgnoreCase);
-			_puncColonEqual = DFA.GenerateString(":=", IgnoreCase);
-			_puncEqual = DFA.GenerateString("=", IgnoreCase);
-			_puncLTGT = DFA.GenerateString("<>", IgnoreCase);
-			_puncLT = DFA.GenerateString("<", IgnoreCase);
-			_puncLE = DFA.GenerateString("<=", IgnoreCase);
-			_puncGT = DFA.GenerateString(">", IgnoreCase);
-			_puncGE = DFA.GenerateString(">=", IgnoreCase);
-			_puncPlus = DFA.GenerateString("+", IgnoreCase);
-			_puncMinus = DFA.GenerateString("-", IgnoreCase);
-			_puncAsterisk = DFA.GenerateString("*", IgnoreCase);
-			_puncSlash = DFA.GenerateString("/", IgnoreCase);
+			_literalInt = Dfa.GenerateIntegerNumber();
+			_identifier = Dfa.GenerateIdentifier();
+			_keywordBegin = Dfa.GenerateString("begin", IgnoreCase);
+			_keywordConst = Dfa.GenerateString("const", IgnoreCase);
+			_keywordDo = Dfa.GenerateString("do", IgnoreCase);
+			_keywordEnd = Dfa.GenerateString("end", IgnoreCase);
+			_keywordFunction = Dfa.GenerateString("function", IgnoreCase);
+			_keywordIf = Dfa.GenerateString("if", IgnoreCase);
+			_keywordReturn = Dfa.GenerateString("return", IgnoreCase);
+			_keywordThen = Dfa.GenerateString("then", IgnoreCase);
+			_keywordVar = Dfa.GenerateString("var", IgnoreCase);
+			_keywordWhile = Dfa.GenerateString("while", IgnoreCase);
+			_puncSemicolon = Dfa.GenerateString(";", IgnoreCase);
+			_puncPeriod = Dfa.GenerateString(".", IgnoreCase);
+			_puncComma = Dfa.GenerateString(",", IgnoreCase);
+			_puncLeftParen = Dfa.GenerateString("(", IgnoreCase);
+			_puncRightParen = Dfa.GenerateString(")", IgnoreCase);
+			_puncColonEqual = Dfa.GenerateString(":=", IgnoreCase);
+			_puncEqual = Dfa.GenerateString("=", IgnoreCase);
+			_puncLTGT = Dfa.GenerateString("<>", IgnoreCase);
+			_puncLT = Dfa.GenerateString("<", IgnoreCase);
+			_puncLE = Dfa.GenerateString("<=", IgnoreCase);
+			_puncGT = Dfa.GenerateString(">", IgnoreCase);
+			_puncGE = Dfa.GenerateString(">=", IgnoreCase);
+			_puncPlus = Dfa.GenerateString("+", IgnoreCase);
+			_puncMinus = Dfa.GenerateString("-", IgnoreCase);
+			_puncAsterisk = Dfa.GenerateString("*", IgnoreCase);
+			_puncSlash = Dfa.GenerateString("/", IgnoreCase);
 			SetupAutomata();
 		}
 
@@ -230,7 +230,7 @@ namespace LexerWithDFA
 
 		private void SetupAutomata()
 		{
-			_automata = Enumerable.Empty<Tuple<DFA, TokenType?>>();
+			_automata = Enumerable.Empty<Tuple<Dfa, TokenType?>>();
 			_automata = _automata.Append(Tuple.Create(_comLine, (TokenType?)null));
 			_automata = _automata.Append(Tuple.Create(_comBlock, (TokenType?)null));
 			_automata = _automata.Append(Tuple.Create(_literalInt, (TokenType?)TokenType.LiteralInteger));
@@ -282,7 +282,7 @@ namespace LexerWithDFA
 
 		private Wrapping<Token?>? GetToken(string str)
 		{
-			Tuple<DFA, TokenType?>? tup =
+			Tuple<Dfa, TokenType?>? tup =
 				_automata
 				.Where(it => it.Item1.IsAcceptable())
 				.FirstOrDefault();
@@ -301,7 +301,7 @@ namespace LexerWithDFA
 			return new Wrapping<Token?>(token);
 		}
 
-		private static Token GetToken(DFA dfa, string strToken, TokenType tokenType)
+		private static Token GetToken(Dfa dfa, string strToken, TokenType tokenType)
 		{
 			TokenType type = tokenType;
 			string src = strToken;

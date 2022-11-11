@@ -2,7 +2,7 @@
 
 namespace LexerWithDFA
 {
-	internal struct Character : IComparable<Character>, IEquatable<Character>
+	public struct Character : IComparable<Character>, IEquatable<Character>
 	{
 		private const char HT = '\t';
 		private const char LF = '\n';

@@ -1,6 +1,6 @@
 ﻿namespace LexerWithDFA
 {
-	internal enum CharacterType : byte
+	public enum CharacterType : byte
 	{
 		/// <summary>literal character</summary>
 		Literal,
