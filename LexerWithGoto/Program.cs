@@ -18,7 +18,7 @@ namespace LexerWithGoto
 			DateTime start = DateTime.Now;
 			string filePath = args[0];
 			using var lexer = new LexerWithGoto(filePath);
-			Token? token;
+			Token<TokenType>? token;
 			while ((token = lexer.GetNextToken()) != null)
 			{
 				Console.WriteLine("{0}:{1}", token.TokenType, token.StringValue);

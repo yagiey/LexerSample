@@ -1,38 +1,31 @@
-﻿namespace LexerSample
+﻿using System;
+
+namespace LexerSample
 {
-	public class Token
+	public class Token<T> where T : struct
 	{
-		public TokenType TokenType { get; private set; }
+		public T TokenType { get; private set; }
 
 		public string? StringValue { get; private set; }
 
 		public int IntegerValue { get; private set; }
 
-		public Token(TokenType type) : this(type, string.Empty, 0)
+		public Token(T type) : this(type, string.Empty, 0)
 		{
 		}
 
-		public Token(TokenType type, string src) : this(type, src, 0) { }
+		public Token(T type, string src) : this(type, src, 0) { }
 
-		public Token(TokenType type, string src, int n)
+		public Token(T type, string src, int n)
 		{
 			TokenType = type;
-
-			if (type == TokenType.LiteralInteger
-				|| type == TokenType.Identifer)
-			{
-				StringValue = src;
-			}
-
-			if (type == TokenType.LiteralInteger)
-			{
-				IntegerValue = n;
-			}
+			StringValue = src;
+			IntegerValue = n;
 		}
 
-		public bool Is(TokenType tokenType)
+		public bool Is(T tokenType)
 		{
-			return TokenType == tokenType;
+			return TokenType.Equals(tokenType);
 		}
 	}
 }

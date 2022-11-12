@@ -37,7 +37,7 @@ namespace LexerWithGoto
 			return _nLf + _nCr + _nCrLf;
 		}
 
-		public Token? GetNextToken()
+		public Token<TokenType>? GetNextToken()
 		{
 			StringBuilder sb = new();
 
@@ -134,13 +134,13 @@ namespace LexerWithGoto
 				if (next == null)
 				{
 					// EOF
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
 					// punctuation mark or character not for identifier
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				//////////////////////////////////
@@ -164,12 +164,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -190,12 +190,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -216,12 +216,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -242,12 +242,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.KeywordBegin);
+					return new Token<TokenType>(TokenType.KeywordBegin);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.KeywordBegin);
+					return new Token<TokenType>(TokenType.KeywordBegin);
 				}
 
 				_itorCh.MoveNext();
@@ -260,7 +260,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.KeywordBegin);
+					return new Token<TokenType>(TokenType.KeywordBegin);
 				}
 			}
 		#endregion
@@ -274,12 +274,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -300,12 +300,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -326,12 +326,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -352,12 +352,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -378,12 +378,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.KeywordConst);
+					return new Token<TokenType>(TokenType.KeywordConst);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.KeywordConst);
+					return new Token<TokenType>(TokenType.KeywordConst);
 				}
 
 				_itorCh.MoveNext();
@@ -395,7 +395,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.KeywordConst);
+					return new Token<TokenType>(TokenType.KeywordConst);
 				}
 			}
 		#endregion
@@ -409,12 +409,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -435,12 +435,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.KeywordDo);
+					return new Token<TokenType>(TokenType.KeywordDo);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.KeywordDo);
+					return new Token<TokenType>(TokenType.KeywordDo);
 				}
 
 				_itorCh.MoveNext();
@@ -452,7 +452,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.KeywordDo);
+					return new Token<TokenType>(TokenType.KeywordDo);
 				}
 			}
 
@@ -467,12 +467,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -493,12 +493,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -519,12 +519,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.KeywordEnd);
+					return new Token<TokenType>(TokenType.KeywordEnd);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.KeywordEnd);
+					return new Token<TokenType>(TokenType.KeywordEnd);
 				}
 
 				_itorCh.MoveNext();
@@ -536,7 +536,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.KeywordEnd);
+					return new Token<TokenType>(TokenType.KeywordEnd);
 				}
 			}
 		#endregion
@@ -550,12 +550,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -576,12 +576,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -602,12 +602,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -628,12 +628,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -654,12 +654,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -680,12 +680,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -706,12 +706,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -732,12 +732,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.KeywordFunction);
+					return new Token<TokenType>(TokenType.KeywordFunction);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.KeywordFunction);
+					return new Token<TokenType>(TokenType.KeywordFunction);
 				}
 
 				_itorCh.MoveNext();
@@ -749,7 +749,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.KeywordFunction);
+					return new Token<TokenType>(TokenType.KeywordFunction);
 				}
 			}
 		#endregion
@@ -763,12 +763,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -789,12 +789,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.KeywordIf);
+					return new Token<TokenType>(TokenType.KeywordIf);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.KeywordIf);
+					return new Token<TokenType>(TokenType.KeywordIf);
 				}
 
 				_itorCh.MoveNext();
@@ -806,7 +806,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.KeywordIf);
+					return new Token<TokenType>(TokenType.KeywordIf);
 				}
 			}
 		#endregion
@@ -820,12 +820,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -846,12 +846,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -872,12 +872,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -898,12 +898,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -924,12 +924,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -950,12 +950,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.KeywordReturn);
+					return new Token<TokenType>(TokenType.KeywordReturn);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.KeywordReturn);
+					return new Token<TokenType>(TokenType.KeywordReturn);
 				}
 
 				_itorCh.MoveNext();
@@ -967,7 +967,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.KeywordReturn);
+					return new Token<TokenType>(TokenType.KeywordReturn);
 				}
 			}
 		#endregion
@@ -981,12 +981,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -1007,12 +1007,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -1033,12 +1033,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -1059,12 +1059,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.KeywordThen);
+					return new Token<TokenType>(TokenType.KeywordThen);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.KeywordThen);
+					return new Token<TokenType>(TokenType.KeywordThen);
 				}
 
 				_itorCh.MoveNext();
@@ -1076,7 +1076,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.KeywordThen);
+					return new Token<TokenType>(TokenType.KeywordThen);
 				}
 			}
 		#endregion
@@ -1090,12 +1090,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -1116,12 +1116,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -1142,12 +1142,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.KeywordVar);
+					return new Token<TokenType>(TokenType.KeywordVar);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.KeywordVar);
+					return new Token<TokenType>(TokenType.KeywordVar);
 				}
 
 				_itorCh.MoveNext();
@@ -1159,7 +1159,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.KeywordVar);
+					return new Token<TokenType>(TokenType.KeywordVar);
 				}
 			}
 		#endregion
@@ -1173,12 +1173,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -1199,12 +1199,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -1225,12 +1225,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -1251,12 +1251,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -1277,12 +1277,12 @@ namespace LexerWithGoto
 				char? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token(TokenType.KeywordWhile);
+					return new Token<TokenType>(TokenType.KeywordWhile);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.KeywordWhile);
+					return new Token<TokenType>(TokenType.KeywordWhile);
 				}
 
 				_itorCh.MoveNext();
@@ -1294,7 +1294,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.KeywordWhile);
+					return new Token<TokenType>(TokenType.KeywordWhile);
 				}
 			}
 		#endregion
@@ -1304,7 +1304,7 @@ namespace LexerWithGoto
 		//////////////////////////////////////////////////////////////
 		#region (
 		state1044:
-			return new Token(TokenType.PunctuationLeftParen);
+			return new Token<TokenType>(TokenType.PunctuationLeftParen);
 		#endregion
 
 		//////////////////////////////////////////////////////////////
@@ -1312,7 +1312,7 @@ namespace LexerWithGoto
 		//////////////////////////////////////////////////////////////
 		#region )
 		state1045:
-			return new Token(TokenType.PunctuationRightParen);
+			return new Token<TokenType>(TokenType.PunctuationRightParen);
 		#endregion
 
 		//////////////////////////////////////////////////////////////
@@ -1320,7 +1320,7 @@ namespace LexerWithGoto
 		//////////////////////////////////////////////////////////////
 		#region *
 		state1046:
-			return new Token(TokenType.PunctuationAsterisk);
+			return new Token<TokenType>(TokenType.PunctuationAsterisk);
 		#endregion
 
 		//////////////////////////////////////////////////////////////
@@ -1342,7 +1342,7 @@ namespace LexerWithGoto
 					}
 				}
 
-				return new Token(TokenType.PunctuationPlus);
+				return new Token<TokenType>(TokenType.PunctuationPlus);
 			}
 		#endregion
 
@@ -1351,7 +1351,7 @@ namespace LexerWithGoto
 		//////////////////////////////////////////////////////////////
 		#region ,
 		state1048:
-			return new Token(TokenType.PunctuationComma);
+			return new Token<TokenType>(TokenType.PunctuationComma);
 		#endregion
 
 		//////////////////////////////////////////////////////////////
@@ -1373,7 +1373,7 @@ namespace LexerWithGoto
 					}
 				}
 
-				return new Token(TokenType.PunctuationMinus);
+				return new Token<TokenType>(TokenType.PunctuationMinus);
 			}
 		#endregion
 
@@ -1382,7 +1382,7 @@ namespace LexerWithGoto
 		//////////////////////////////////////////////////////////////
 		#region .
 		state1050:
-			return new Token(TokenType.PunctuationPeriod);
+			return new Token<TokenType>(TokenType.PunctuationPeriod);
 		#endregion
 
 		//////////////////////////////////////////////////////////////
@@ -1405,7 +1405,7 @@ namespace LexerWithGoto
 						goto state5008;
 					}
 				}
-				return new Token(TokenType.PunctuationSlash);
+				return new Token<TokenType>(TokenType.PunctuationSlash);
 			}
 		#endregion
 
@@ -1429,7 +1429,7 @@ namespace LexerWithGoto
 		state1053:
 			{
 				_itorCh.MoveNext();
-				return new Token(TokenType.PunctuationColonEqual);
+				return new Token<TokenType>(TokenType.PunctuationColonEqual);
 			}
 		#endregion
 
@@ -1438,7 +1438,7 @@ namespace LexerWithGoto
 		//////////////////////////////////////////////////////////////
 		#region ;
 		state1054:
-			return new Token(TokenType.PunctuationSemicolon);
+			return new Token<TokenType>(TokenType.PunctuationSemicolon);
 		#endregion
 
 		//////////////////////////////////////////////////////////////
@@ -1459,16 +1459,16 @@ namespace LexerWithGoto
 						goto state1057;
 					}
 				}
-				return new Token(TokenType.PunctuationLT);
+				return new Token<TokenType>(TokenType.PunctuationLT);
 			}
 
 		state1056:
 			_itorCh.MoveNext();
-			return new Token(TokenType.PunctuationLTGT);
+			return new Token<TokenType>(TokenType.PunctuationLTGT);
 
 		state1057:
 			_itorCh.MoveNext();
-			return new Token(TokenType.PunctuationLE);
+			return new Token<TokenType>(TokenType.PunctuationLE);
 		#endregion
 
 		//////////////////////////////////////////////////////////////
@@ -1476,7 +1476,7 @@ namespace LexerWithGoto
 		//////////////////////////////////////////////////////////////
 		#region =
 		state1058:
-			return new Token(TokenType.PunctuationEqual);
+			return new Token<TokenType>(TokenType.PunctuationEqual);
 		#endregion
 
 		//////////////////////////////////////////////////////////////
@@ -1490,11 +1490,11 @@ namespace LexerWithGoto
 				{
 					goto state1060;
 				}
-				return new Token(TokenType.PunctuationGT);
+				return new Token<TokenType>(TokenType.PunctuationGT);
 			}
 		state1060:
 			_itorCh.MoveNext();
-			return new Token(TokenType.PunctuationGE);
+			return new Token<TokenType>(TokenType.PunctuationGE);
 		#endregion
 
 		//////////////////////////////////////////////////////////////
@@ -1538,12 +1538,12 @@ namespace LexerWithGoto
 				if (next == null)
 				{
 					// EOF
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 
 				_itorCh.MoveNext();
@@ -1555,7 +1555,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.Identifer, sb.ToString());
+					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
 				}
 			}
 		#endregion
@@ -1565,7 +1565,7 @@ namespace LexerWithGoto
 		//////////////////////////////////////////////////////////////
 		#region integer number
 		state5003:
-			return new Token(TokenType.LiteralInteger, sb.ToString(), 0);
+			return new Token<TokenType>(TokenType.LiteralInteger, sb.ToString(), 0);
 
 		state5004:
 			{
@@ -1578,7 +1578,7 @@ namespace LexerWithGoto
 				}
 				else
 				{
-					return new Token(TokenType.LiteralInteger, sb.ToString(), int.Parse(sb.ToString()));
+					return new Token<TokenType>(TokenType.LiteralInteger, sb.ToString(), int.Parse(sb.ToString()));
 				}
 			}
 		#endregion
