@@ -7,9 +7,9 @@ using System.Text;
 
 namespace LexerWithDFA
 {
-	internal class LexerWithDFA<TokenType> : IDisposable where TokenType : struct
+	public class LexerWithDFA<TokenType> : IDisposable where TokenType : struct
 	{
-		internal class Wrapping<T>
+		private class Wrapping<T>
 		{
 			public T Value { get; private set; }
 
