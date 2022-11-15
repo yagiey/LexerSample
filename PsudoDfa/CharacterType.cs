@@ -1,4 +1,4 @@
-﻿namespace LexerWithDFA
+﻿namespace PsudoDfa
 {
 	public enum CharacterType : byte
 	{

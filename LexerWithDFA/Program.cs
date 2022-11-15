@@ -1,4 +1,5 @@
 ﻿using LexerSample;
+using PsudoDfa;
 using System;
 using System.Collections.Generic;
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LexerWithDFA
+namespace PsudoDfa
 {
 	using DfaTransitionMap = IDictionary<int, IDictionary<Character, int>>;
 

@@ -1,5 +1,6 @@
 ﻿using LexerSample;
 using LexerWithDFA.Extensions.Generic;
+using PsudoDfa;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LexerWithDFA
+namespace PsudoDfa
 {
 	public struct Character : IComparable<Character>, IEquatable<Character>
 	{
