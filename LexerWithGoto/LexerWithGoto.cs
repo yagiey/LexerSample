@@ -1,14 +1,14 @@
 ﻿using LexerSample;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace LexerWithGoto
 {
 	internal class LexerWithGoto : IDisposable
 	{
 		private readonly TextFileEnumerator _reader;
-		private readonly IEnumerator<Tuple<char, char?>> _itorCh;
+		private readonly IEnumerator<Tuple<int, int?>> _itorCh;
 		private bool _isDisposed;
 		private bool _invalidChar;
 
@@ -39,7 +39,7 @@ namespace LexerWithGoto
 
 		public Token<TokenType>? GetNextToken()
 		{
-			StringBuilder sb = new();
+			List<int> characters = new();
 
 		//////////////////////////////////////////////////////////////
 		// initial state
@@ -61,7 +61,7 @@ namespace LexerWithGoto
 							return null;
 						}
 
-						char? next = _itorCh.Current.Item2;
+						int? next = _itorCh.Current.Item2;
 						if (next != null && (next.Value == Cr || next.Value == Lf))
 						{
 							// skip until next LF or CR
@@ -70,7 +70,7 @@ namespace LexerWithGoto
 					}
 				}
 
-				char ch;
+				int ch;
 				while (true)
 				{
 					if (!_itorCh.MoveNext())
@@ -86,34 +86,34 @@ namespace LexerWithGoto
 					}
 				}
 
-				if (ch == 'b') { sb.Append(ch); goto state0001; }
-				else if (ch == 'c') { sb.Append(ch); goto state0006; }
-				else if (ch == 'd') { sb.Append(ch); goto state0011; }
-				else if (ch == 'e') { sb.Append(ch); goto state0013; }
-				else if (ch == 'f') { sb.Append(ch); goto state0016; }
-				else if (ch == 'i') { sb.Append(ch); goto state0024; }
-				else if (ch == 'r') { sb.Append(ch); goto state0026; }
-				else if (ch == 't') { sb.Append(ch); goto state0032; }
-				else if (ch == 'v') { sb.Append(ch); goto state0036; }
-				else if (ch == 'w') { sb.Append(ch); goto state0039; }
-				else if (ch == '(') { sb.Append(ch); goto state1044; }
-				else if (ch == ')') { sb.Append(ch); goto state1045; }
-				else if (ch == '*') { sb.Append(ch); goto state1046; }
-				else if (ch == '+') { sb.Append(ch); goto state1047; }
-				else if (ch == ',') { sb.Append(ch); goto state1048; }
-				else if (ch == '-') { sb.Append(ch); goto state1049; }
-				else if (ch == '.') { sb.Append(ch); goto state1050; }
-				else if (ch == '/') { sb.Append(ch); goto state1051; }
-				else if (ch == ':') { sb.Append(ch); goto state1052; }
-				else if (ch == ';') { sb.Append(ch); goto state1054; }
-				else if (ch == '<') { sb.Append(ch); goto state1055; }
-				else if (ch == '=') { sb.Append(ch); goto state1058; }
-				else if (ch == '>') { sb.Append(ch); goto state1059; }
+				if (ch == 'b') { characters.Add(ch); goto state0001; }
+				else if (ch == 'c') { characters.Add(ch); goto state0006; }
+				else if (ch == 'd') { characters.Add(ch); goto state0011; }
+				else if (ch == 'e') { characters.Add(ch); goto state0013; }
+				else if (ch == 'f') { characters.Add(ch); goto state0016; }
+				else if (ch == 'i') { characters.Add(ch); goto state0024; }
+				else if (ch == 'r') { characters.Add(ch); goto state0026; }
+				else if (ch == 't') { characters.Add(ch); goto state0032; }
+				else if (ch == 'v') { characters.Add(ch); goto state0036; }
+				else if (ch == 'w') { characters.Add(ch); goto state0039; }
+				else if (ch == '(') { characters.Add(ch); goto state1044; }
+				else if (ch == ')') { characters.Add(ch); goto state1045; }
+				else if (ch == '*') { characters.Add(ch); goto state1046; }
+				else if (ch == '+') { characters.Add(ch); goto state1047; }
+				else if (ch == ',') { characters.Add(ch); goto state1048; }
+				else if (ch == '-') { characters.Add(ch); goto state1049; }
+				else if (ch == '.') { characters.Add(ch); goto state1050; }
+				else if (ch == '/') { characters.Add(ch); goto state1051; }
+				else if (ch == ':') { characters.Add(ch); goto state1052; }
+				else if (ch == ';') { characters.Add(ch); goto state1054; }
+				else if (ch == '<') { characters.Add(ch); goto state1055; }
+				else if (ch == '=') { characters.Add(ch); goto state1058; }
+				else if (ch == '>') { characters.Add(ch); goto state1059; }
 				else if (ch == Lf) { goto state1061; }
 				else if (ch == Cr) { goto state1062; }
-				else if (IsCharacterForIdHead(ch)) { sb.Append(ch); goto state5001; }
-				else if (ch == '0') { sb.Append(ch); goto state5003; }
-				else if (IsDigit(ch)) { sb.Append(ch); goto state5004; }
+				else if (IsCharacterForIdHead(ch)) { characters.Add(ch); goto state5001; }
+				else if (ch == '0') { characters.Add(ch); goto state5003; }
+				else if (IsDigit(ch)) { characters.Add(ch); goto state5004; }
 				else { goto error; }
 			}
 		#endregion
@@ -130,25 +130,27 @@ namespace LexerWithGoto
 				//  * punctuation marks
 				//  * characters not for identifier
 				//////////////////////////////////
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					// EOF
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
 					// punctuation mark or character not for identifier
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				//////////////////////////////////
 				// decition by current character
 				//////////////////////////////////
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'e')
 				{
 					goto state0002;
@@ -161,20 +163,22 @@ namespace LexerWithGoto
 
 		state0002:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'g')
 				{
 					goto state0003;
@@ -187,20 +191,22 @@ namespace LexerWithGoto
 
 		state0003:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'i')
 				{
 					goto state0004;
@@ -213,20 +219,22 @@ namespace LexerWithGoto
 
 		state0004:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'n')
 				{
 					goto state0005;
@@ -239,7 +247,7 @@ namespace LexerWithGoto
 
 		state0005:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					return new Token<TokenType>(TokenType.KeywordBegin);
@@ -251,11 +259,11 @@ namespace LexerWithGoto
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
 					// identifier
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
@@ -271,20 +279,22 @@ namespace LexerWithGoto
 		#region const
 		state0006:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'o')
 				{
 					goto state0007;
@@ -297,20 +307,22 @@ namespace LexerWithGoto
 
 		state0007:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'n')
 				{
 					goto state0008;
@@ -323,20 +335,22 @@ namespace LexerWithGoto
 
 		state0008:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 's')
 				{
 					goto state0009;
@@ -349,20 +363,22 @@ namespace LexerWithGoto
 
 		state0009:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 't')
 				{
 					goto state0010;
@@ -375,7 +391,7 @@ namespace LexerWithGoto
 
 		state0010:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					return new Token<TokenType>(TokenType.KeywordConst);
@@ -387,10 +403,10 @@ namespace LexerWithGoto
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
@@ -406,20 +422,22 @@ namespace LexerWithGoto
 		#region do
 		state0011:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'o')
 				{
 					goto state0012;
@@ -432,7 +450,7 @@ namespace LexerWithGoto
 
 		state0012:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					return new Token<TokenType>(TokenType.KeywordDo);
@@ -444,10 +462,10 @@ namespace LexerWithGoto
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
@@ -464,20 +482,22 @@ namespace LexerWithGoto
 		#region end
 		state0013:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'n')
 				{
 					goto state0014;
@@ -490,20 +510,22 @@ namespace LexerWithGoto
 
 		state0014:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'd')
 				{
 					goto state0015;
@@ -516,7 +538,7 @@ namespace LexerWithGoto
 
 		state0015:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					return new Token<TokenType>(TokenType.KeywordEnd);
@@ -528,10 +550,10 @@ namespace LexerWithGoto
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
@@ -547,20 +569,22 @@ namespace LexerWithGoto
 		#region function
 		state0016:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'u')
 				{
 					goto state0017;
@@ -573,20 +597,22 @@ namespace LexerWithGoto
 
 		state0017:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'n')
 				{
 					goto state0018;
@@ -599,20 +625,22 @@ namespace LexerWithGoto
 
 		state0018:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'c')
 				{
 					goto state0019;
@@ -625,20 +653,22 @@ namespace LexerWithGoto
 
 		state0019:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 't')
 				{
 					goto state0020;
@@ -651,20 +681,22 @@ namespace LexerWithGoto
 
 		state0020:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'i')
 				{
 					goto state0021;
@@ -677,20 +709,22 @@ namespace LexerWithGoto
 
 		state0021:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'o')
 				{
 					goto state0022;
@@ -703,20 +737,22 @@ namespace LexerWithGoto
 
 		state0022:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'n')
 				{
 					goto state0023;
@@ -729,7 +765,7 @@ namespace LexerWithGoto
 
 		state0023:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					return new Token<TokenType>(TokenType.KeywordFunction);
@@ -741,10 +777,10 @@ namespace LexerWithGoto
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
@@ -760,20 +796,22 @@ namespace LexerWithGoto
 		#region if
 		state0024:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'f')
 				{
 					goto state0025;
@@ -786,7 +824,7 @@ namespace LexerWithGoto
 
 		state0025:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					return new Token<TokenType>(TokenType.KeywordIf);
@@ -798,10 +836,10 @@ namespace LexerWithGoto
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
@@ -817,20 +855,22 @@ namespace LexerWithGoto
 		#region return
 		state0026:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'e')
 				{
 					goto state0027;
@@ -843,20 +883,22 @@ namespace LexerWithGoto
 
 		state0027:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 't')
 				{
 					goto state0028;
@@ -869,20 +911,22 @@ namespace LexerWithGoto
 
 		state0028:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'u')
 				{
 					goto state0029;
@@ -895,20 +939,22 @@ namespace LexerWithGoto
 
 		state0029:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'r')
 				{
 					goto state0030;
@@ -921,20 +967,22 @@ namespace LexerWithGoto
 
 		state0030:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'n')
 				{
 					goto state0031;
@@ -947,7 +995,7 @@ namespace LexerWithGoto
 
 		state0031:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					return new Token<TokenType>(TokenType.KeywordReturn);
@@ -959,10 +1007,10 @@ namespace LexerWithGoto
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
@@ -978,20 +1026,22 @@ namespace LexerWithGoto
 		#region then
 		state0032:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'h')
 				{
 					goto state0033;
@@ -1004,20 +1054,22 @@ namespace LexerWithGoto
 
 		state0033:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'e')
 				{
 					goto state0034;
@@ -1030,20 +1082,22 @@ namespace LexerWithGoto
 
 		state0034:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'n')
 				{
 					goto state0035;
@@ -1056,7 +1110,7 @@ namespace LexerWithGoto
 
 		state0035:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					return new Token<TokenType>(TokenType.KeywordThen);
@@ -1068,10 +1122,10 @@ namespace LexerWithGoto
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
@@ -1087,20 +1141,22 @@ namespace LexerWithGoto
 		#region var
 		state0036:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'a')
 				{
 					goto state0037;
@@ -1113,20 +1169,22 @@ namespace LexerWithGoto
 
 		state0037:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'r')
 				{
 					goto state0038;
@@ -1139,7 +1197,7 @@ namespace LexerWithGoto
 
 		state0038:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					return new Token<TokenType>(TokenType.KeywordVar);
@@ -1151,10 +1209,10 @@ namespace LexerWithGoto
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
@@ -1170,20 +1228,22 @@ namespace LexerWithGoto
 		#region while
 		state0039:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'h')
 				{
 					goto state0040;
@@ -1196,20 +1256,22 @@ namespace LexerWithGoto
 
 		state0040:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'i')
 				{
 					goto state0041;
@@ -1222,20 +1284,22 @@ namespace LexerWithGoto
 
 		state0041:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'l')
 				{
 					goto state0042;
@@ -1248,20 +1312,22 @@ namespace LexerWithGoto
 
 		state0042:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 				if (ch == 'e')
 				{
 					goto state0043;
@@ -1274,7 +1340,7 @@ namespace LexerWithGoto
 
 		state0043:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					return new Token<TokenType>(TokenType.KeywordWhile);
@@ -1286,10 +1352,10 @@ namespace LexerWithGoto
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
@@ -1329,7 +1395,7 @@ namespace LexerWithGoto
 		#region +
 		state1047:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null)
 				{
 					if (next.Value == '0')
@@ -1360,7 +1426,7 @@ namespace LexerWithGoto
 		#region -
 		state1049:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null)
 				{
 					if (next.Value == '0')
@@ -1391,7 +1457,7 @@ namespace LexerWithGoto
 		#region /
 		state1051:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null)
 				{
 					if (next.Value == '/')
@@ -1415,7 +1481,7 @@ namespace LexerWithGoto
 		#region :=
 		state1052:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null && next.HasValue && next.Value == '=')
 				{
 					goto state1053;
@@ -1447,7 +1513,7 @@ namespace LexerWithGoto
 		#region < <> <=
 		state1055:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null && next.HasValue)
 				{
 					if (next.Value == '>')
@@ -1485,7 +1551,7 @@ namespace LexerWithGoto
 		#region > >=
 		state1059:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null && next.HasValue && next.Value == '=')
 				{
 					goto state1060;
@@ -1512,7 +1578,7 @@ namespace LexerWithGoto
 		#region CR CRLF
 		state1062:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null && next.Value == Lf)
 				{
 					goto state1063;
@@ -1534,28 +1600,31 @@ namespace LexerWithGoto
 		#region identifier
 		state5001:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next == null)
 				{
 					// EOF
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 				else if (IsCharacterForOperator(next.Value)
 					|| !IsCharacterForId(next.Value))
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 
 				_itorCh.MoveNext();
-				char ch = _itorCh.Current.Item1;
+				int ch = _itorCh.Current.Item1;
 				if (IsCharacterForId(ch))
 				{
-					sb.Append(ch);
+					characters.Add(ch);
 					goto state5001;
 				}
 				else
 				{
-					return new Token<TokenType>(TokenType.Identifer, sb.ToString());
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.Identifer, strToken);
 				}
 			}
 		#endregion
@@ -1565,20 +1634,23 @@ namespace LexerWithGoto
 		//////////////////////////////////////////////////////////////
 		#region integer number
 		state5003:
-			return new Token<TokenType>(TokenType.LiteralInteger, sb.ToString(), 0);
-
+			{
+				string strToken = GetString(characters);
+				return new Token<TokenType>(TokenType.LiteralInteger, strToken, 0);
+			}
 		state5004:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null && IsDigit(next.Value))
 				{
 					_itorCh.MoveNext();
-					sb.Append(_itorCh.Current.Item1);
+					characters.Add(_itorCh.Current.Item1);
 					goto state5004;
 				}
 				else
 				{
-					return new Token<TokenType>(TokenType.LiteralInteger, sb.ToString(), int.Parse(sb.ToString()));
+					string strToken = GetString(characters);
+					return new Token<TokenType>(TokenType.LiteralInteger, strToken, int.Parse(strToken));
 				}
 			}
 		#endregion
@@ -1595,14 +1667,14 @@ namespace LexerWithGoto
 					return null;
 				}
 
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null && (next.Value == Lf || next.Value == Cr))
 				{
 					// end of comment
-					sb.Clear();
+					characters.Clear();
 					goto state0000;
 				}
 				else
@@ -1628,8 +1700,8 @@ namespace LexerWithGoto
 					return null;
 				}
 
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 
 				if (ch == Cr)
 				{
@@ -1642,7 +1714,7 @@ namespace LexerWithGoto
 			}
 		state5008_tail:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null && next.Value == '*')
 				{
 					goto state5009;
@@ -1655,7 +1727,7 @@ namespace LexerWithGoto
 
 		state5008_cr:
 			{
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null && next.Value == Lf)
 				{
 					_itorCh.MoveNext();
@@ -1672,10 +1744,10 @@ namespace LexerWithGoto
 			{
 				_itorCh.MoveNext();
 
-				char ch = _itorCh.Current.Item1;
-				sb.Append(ch);
+				int ch = _itorCh.Current.Item1;
+				characters.Add(ch);
 
-				char? next = _itorCh.Current.Item2;
+				int? next = _itorCh.Current.Item2;
 				if (next != null && next.Value == '/')
 				{
 					goto state5010;
@@ -1689,10 +1761,10 @@ namespace LexerWithGoto
 		state5010:
 			{
 				_itorCh.MoveNext();
-				sb.Append(_itorCh.Current.Item1);
+				characters.Add(_itorCh.Current.Item1);
 
 				// end of comment
-				sb.Clear();
+				characters.Clear();
 				goto state0000;
 			}
 		#endregion
@@ -1720,37 +1792,43 @@ namespace LexerWithGoto
 
 		#region private methods
 
-		private static bool IsDigit(char ch)
+		private static string GetString(IEnumerable<int> characters)
 		{
-			return char.IsDigit(ch);
+			string strToken = string.Join(string.Empty, characters.Select(it => char.ConvertFromUtf32(it)));
+			return strToken;
 		}
 
-		private static bool IsLower(char ch)
+		private static bool IsDigit(int ch)
+		{
+			return '0' <= ch && ch <= '9';
+		}
+
+		private static bool IsLower(int ch)
 		{
 			return 'a' <= ch && ch <= 'z';
 		}
 
-		private static bool IsUpper(char ch)
+		private static bool IsUpper(int ch)
 		{
 			return 'A' <= ch && ch <= 'Z';
 		}
 
-		private static bool IsTabOrSpace(char ch)
+		private static bool IsTabOrSpace(int ch)
 		{
 			return ch == Ht || ch == Sp;
 		}
 
-		private static bool IsCharacterForId(char ch)
+		private static bool IsCharacterForId(int ch)
 		{
 			return IsDigit(ch) || IsLower(ch) || IsUpper(ch) || ch == '_';
 		}
 
-		private static bool IsCharacterForIdHead(char ch)
+		private static bool IsCharacterForIdHead(int ch)
 		{
 			return IsLower(ch) || IsUpper(ch) || ch == '_';
 		}
 
-		private static bool IsCharacterForOperator(char ch)
+		private static bool IsCharacterForOperator(int ch)
 		{
 			return
 				ch == '('

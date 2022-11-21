@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace LexerSample
+﻿namespace LexerSample
 {
 	public class Token<T> where T : struct
 	{

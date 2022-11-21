@@ -249,7 +249,7 @@ namespace PsudoDfa
 			return result;
 		}
 
-		public void MoveNext(char ch)
+		public void MoveNext(int ch)
 		{
 			var result = GetNext(ch, _state, TransitionMap, IsError());
 			if (result.Item1)
@@ -260,7 +260,7 @@ namespace PsudoDfa
 
 			if (IgnoreCase)
 			{
-				char? corr = ToCorrespondingCase(ch);
+				int? corr = ToCorrespondingCase(ch);
 				if (corr.HasValue)
 				{
 					var result2 = GetNext(corr.Value, _state, TransitionMap, IsError());
@@ -299,13 +299,13 @@ namespace PsudoDfa
 			return _isError;
 		}
 
-		public bool IsNextError(char ch)
+		public bool IsNextError(int ch)
 		{
 			var result = GetNext(ch, _state, TransitionMap, IsError());
 			return !result.Item1;
 		}
 
-		private static Tuple<bool, int> GetNext(char ch, int current, DfaTransitionMap transitionMap, bool isError)
+		private static Tuple<bool, int> GetNext(int ch, int current, DfaTransitionMap transitionMap, bool isError)
 		{
 			if (isError)
 			{
@@ -345,30 +345,20 @@ namespace PsudoDfa
 			return new Dictionary<Character, int>(map.Where(_ => !_.Key.IsLiteralCharacter()));
 		}
 
-		private static char? ToCorrespondingCase(char ch)
+		private static int? ToCorrespondingCase(int ch)
 		{
-			if (IsUpperCase(ch))
+			if (Character.IsUpperCase(ch))
 			{
-				return char.ToLower(ch);
+				return Character.ToLower(ch);
 			}
-			else if (IsLowerCase(ch))
+			else if (Character.IsLowerCase(ch))
 			{
-				return char.ToUpper(ch);
+				return Character.ToUpper(ch);
 			}
 			else
 			{
 				return null;
 			}
-		}
-
-		private static bool IsUpperCase(char ch)
-		{
-			return 'A' <= ch && ch <= 'Z';
-		}
-
-		private static bool IsLowerCase(char ch)
-		{
-			return 'a' <= ch && ch <= 'z';
 		}
 	}
 }

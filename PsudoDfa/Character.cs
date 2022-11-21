@@ -10,7 +10,7 @@ namespace PsudoDfa
 		private const char SP = ' ';
 
 		public CharacterType CharacterType { get; private set; }
-		public char Value { get; private set; }
+		public int Value { get; private set; }
 
 		/// <summary>not equal</summary>
 		public static readonly Character NotEqual;
@@ -46,22 +46,28 @@ namespace PsudoDfa
 			Value = ch;
 		}
 
-		private static bool IsLower(char ch)
+		public Character(CharacterType charType, int ch)
+		{
+			CharacterType = charType;
+			Value = ch;
+		}
+
+		public static bool IsLowerCase(int ch)
 		{
 			return 'a' <= ch && ch <= 'z';
 		}
 
-		private static bool IsUpper(char ch)
+		public static bool IsUpperCase(int ch)
 		{
 			return 'A' <= ch && ch <= 'Z';
 		}
 
-		private static bool IsWhiteSpace(char ch)
+		private static bool IsWhiteSpace(int ch)
 		{
 			return IsHtabOrSpace(ch) || ch == LF || ch == CR;
 		}
 
-		private static bool IsHtabOrSpace(char ch)
+		private static bool IsHtabOrSpace(int ch)
 		{
 			return ch == HT || ch == SP;
 		}
@@ -71,7 +77,7 @@ namespace PsudoDfa
 			return CharacterType == CharacterType.Literal;
 		}
 
-		public bool Match(char ch)
+		public bool Match(int ch)
 		{
 			if (CharacterType == CharacterType.Literal)
 			{
@@ -87,7 +93,7 @@ namespace PsudoDfa
 			}
 			else if (CharacterType == CharacterType.Digit)
 			{
-				return char.IsDigit(ch);
+				return '0' <= ch && ch <= '9';
 			}
 			else if (CharacterType == CharacterType.Digit1_9)
 			{
@@ -95,11 +101,11 @@ namespace PsudoDfa
 			}
 			else if (CharacterType == CharacterType.IdentifierHead)
 			{
-				return IsLower(ch) || IsUpper(ch) || ch == '_';
+				return IsLowerCase(ch) || IsUpperCase(ch) || ch == '_';
 			}
 			else if (CharacterType == CharacterType.IdentifierCharacter)
 			{
-				return char.IsDigit(ch) || IsLower(ch) || IsUpper(ch) || ch == '_';
+				return ('0' <= ch && ch <= '9') || IsLowerCase(ch) || IsUpperCase(ch) || ch == '_';
 			}
 			else if (CharacterType == CharacterType.NeitherLfNorCr)
 			{
@@ -170,13 +176,13 @@ namespace PsudoDfa
 
 		public override int GetHashCode()
 		{
-			byte[] bytes = new byte[4];
 			byte[] ch = BitConverter.GetBytes(Value);
 
-			bytes[0] = ch[0];
+			byte[] bytes = new byte[4];
+			bytes[0] = (byte)CharacterType;
 			bytes[1] = ch[1];
-			bytes[2] = (byte)CharacterType;
-			bytes[3] = 0;
+			bytes[2] = ch[2];
+			bytes[3] = ch[3];
 
 			return BitConverter.ToInt32(bytes);
 		}
@@ -219,6 +225,18 @@ namespace PsudoDfa
 			{
 				return null;
 			}
+		}
+
+		public static int ToLower(int ch)
+		{
+			int diff = ch - 'A';
+			return Convert.ToChar('a' + diff);
+		}
+
+		public static int ToUpper(int ch)
+		{
+			int diff = ch - 'a';
+			return Convert.ToChar('A' + diff);
 		}
 	}
 }

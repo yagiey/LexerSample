@@ -4,7 +4,6 @@ using PsudoDfa;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace LexerWithDFA
 {
@@ -26,7 +25,7 @@ namespace LexerWithDFA
 		private const char Sp = ' ';
 
 		private readonly TextFileEnumerator _reader;
-		private readonly IEnumerator<Tuple<char, char?>> _itorCh;
+		private readonly IEnumerator<Tuple<int, int?>> _itorCh;
 		private readonly IEnumerable<Tuple<Dfa, TokenType?>> _tokenInfos;
 		private bool _isDisposed;
 		private bool _foundCrLf;
@@ -61,23 +60,24 @@ namespace LexerWithDFA
 		public Token<TokenType>? GetNextToken()
 		{
 			SetupAutomata();
-			StringBuilder sb = new();
+			List<int> characters = new();
 
 			while (true)
 			{
 				if (!_itorCh.MoveNext())
 				{
 					// EOF
-					if (0 < sb.Length)
+					if (0 < characters.Count)
 					{
-						var tup2 = GetToken(sb.ToString());
+						string strToken = GetString(characters);
+						var tup2 = GetToken(strToken);
 						if (tup2 != null && tup2.Value != null)
 						{
 							return tup2.Value;
 						}
 						else
 						{
-							string errorMsg = string.Format("invalid token '{0}' detected", sb.ToString());
+							string errorMsg = string.Format("invalid token '{0}' detected", strToken);
 							throw new Exception(errorMsg);
 						}
 					}
@@ -85,8 +85,8 @@ namespace LexerWithDFA
 					return null;
 				}
 
-				char current = _itorCh.Current.Item1;
-				char? next = _itorCh.Current.Item2;
+				int current = _itorCh.Current.Item1;
+				int? next = _itorCh.Current.Item2;
 
 				// count line break
 				if (current == Cr && next != null && next.Value == Lf)
@@ -117,12 +117,13 @@ namespace LexerWithDFA
 				}
 
 				MoveNextAutomata(current);
-				sb.Append(current);
+				characters.Add(current);
 
 				int nowAlive = _automata.Count();
 				if (nowAlive == 0)
 				{
-					string errorMsg = string.Format("invalid token '{0}' detected", sb.ToString());
+					string strToken = GetString(characters);
+					string errorMsg = string.Format("invalid token '{0}' detected", strToken);
 					throw new Exception(errorMsg);
 				}
 
@@ -134,14 +135,15 @@ namespace LexerWithDFA
 						int nowAcceptable = _automata.Count(it => it.Item1.IsAcceptable());
 						if (0 < nowAcceptable)
 						{
-							Wrapping<Token<TokenType>?>? tup1 = GetToken(sb.ToString());
+							string strToken = GetString(characters);
+							Wrapping<Token<TokenType>?>? tup1 = GetToken(strToken);
 							if (tup1 != null && tup1.Value != null)
 							{
 								return tup1.Value;
 							}
 
 							SetupAutomata();
-							sb.Clear();
+							characters.Clear();
 						}
 						else
 						{
@@ -154,6 +156,12 @@ namespace LexerWithDFA
 					// just before EOF
 				}
 			}
+		}
+
+		private static string GetString(IEnumerable<int> characters)
+		{
+			string strToken = string.Join(string.Empty, characters.Select(it => char.ConvertFromUtf32(it)));
+			return strToken;
 		}
 
 		public void Dispose()
@@ -182,13 +190,13 @@ namespace LexerWithDFA
 			return _automata.All(it => it.Item1.IsInitialState());
 		}
 
-		private void MoveNextAutomata(char ch)
+		private void MoveNextAutomata(int ch)
 		{
 			_automata.ForEach(it => it.Item1.MoveNext(ch));
 			_automata = _automata.Where(it => !it.Item1.IsError());
 		}
 
-		private int CountNextAlive(char ch)
+		private int CountNextAlive(int ch)
 		{
 			return _automata.Count(it => !it.Item1.IsNextError(ch));
 		}
@@ -221,7 +229,7 @@ namespace LexerWithDFA
 			return new Token<TokenType>(type, src);
 		}
 
-		private static bool IsWhiteSpace(char ch)
+		private static bool IsWhiteSpace(int ch)
 		{
 			return ch == Ht || ch == Lf || ch == Cr || ch == Sp;
 		}

@@ -2,11 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace LexerSample
 {
-	public class TextFileEnumerator : IEnumerable<Tuple<char, char?>>, IDisposable
+	public class TextFileEnumerator : IEnumerable<Tuple<int, int?>>, IDisposable
 	{
 		private readonly string _filePath;
 		private StreamReader _sr;
@@ -15,12 +14,12 @@ namespace LexerSample
 		private const char CR = '\r';
 		private const int BufferSize = 512;
 		private bool _eof;
-		private readonly StringBuilder _sb;
+		private readonly List<char> _characters;
 
 		public TextFileEnumerator(string filePath)
 		{
 			_filePath = filePath;
-			_sb = new();
+			_characters = new();
 			_sr = null!;
 			_isDisposed = true;
 			Reset();
@@ -34,13 +33,13 @@ namespace LexerSample
 			}
 
 			_charIndex = -1;
-			_sb.Clear();
+			_characters.Clear();
 			_eof = false;
 			_isDisposed = false;
 			_sr = new StreamReader(_filePath);
 		}
 
-		private char? GetNextChar()
+		private int? GetNextChar()
 		{
 			if (_eof)
 			{
@@ -50,7 +49,7 @@ namespace LexerSample
 			//if (_charIndex < 0)
 			while (_charIndex < 0)
 			{
-				_sb.Clear();
+				_characters.Clear();
 
 				char[] buff;
 				int n;
@@ -65,9 +64,13 @@ namespace LexerSample
 						break;
 					}
 
-					_sb.Append(buff, 0, n);
+					for (int i = 0; i < n; i++)
+					{
+						_characters.Add(buff[i]);
+					}
 
-					if (buff[^1] == CR)
+					char tail = buff[^1];
+					if (tail == CR || char.IsHighSurrogate(tail))
 					{
 						bool found = false;
 						while (true)
@@ -79,9 +82,9 @@ namespace LexerSample
 								break;
 							}
 
-							_sb.Append(Convert.ToChar(n));
+							_characters.Add(Convert.ToChar(n));
 
-							if (n != CR)
+							if (n != CR && !char.IsHighSurrogate(Convert.ToChar(n)))
 							{
 								found = true;
 								break;
@@ -106,14 +109,14 @@ namespace LexerSample
 				}
 			}
 
-			if (_charIndex < 0 || _sb.Length <= 0)
+			if (_charIndex < 0 || _characters.Count <= 0)
 			{
 				// EOF
 				return null;
 			}
 
-			char ch = _sb[_charIndex];
-			if (_charIndex == _sb.Length - 1)
+			char ch = _characters[_charIndex];
+			if (_charIndex == _characters.Count - 1)
 			{
 				_charIndex = -1;
 			}
@@ -122,7 +125,23 @@ namespace LexerSample
 				_charIndex++;
 			}
 
-			return ch;
+			if (char.IsHighSurrogate(ch))
+			{
+				char low = _characters[_charIndex];
+				if (_charIndex == _characters.Count - 1)
+				{
+					_charIndex = -1;
+				}
+				else
+				{
+					_charIndex++;
+				}
+				return char.ConvertToUtf32(ch, low);
+			}
+			else
+			{
+				return ch;
+			}
 		}
 
 		public void Dispose()
@@ -136,14 +155,14 @@ namespace LexerSample
 			_isDisposed = true;
 		}
 
-		public IEnumerator<Tuple<char, char?>> GetEnumerator()
+		public IEnumerator<Tuple<int, int?>> GetEnumerator()
 		{
-			char? ch1 = GetNextChar();
+			int? ch1 = GetNextChar();
 			if (ch1 == null)
 			{
 				yield break;
 			}
-			char? ch2 = GetNextChar();
+			int? ch2 = GetNextChar();
 			yield return Tuple.Create(ch1.Value, ch2);
 
 			while (true)
@@ -152,7 +171,7 @@ namespace LexerSample
 				{
 					yield break;
 				}
-				char? ch3 = GetNextChar();
+				int? ch3 = GetNextChar();
 				yield return Tuple.Create(ch2.Value, ch3);
 				ch2 = ch3;
 			}
