@@ -2,7 +2,6 @@
 using PsudoDfa;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace LexerWithDFA
 {
@@ -60,21 +59,13 @@ namespace LexerWithDFA
 			using var lexer = new LexerWithDFA<TokenType>(filePath, tokenInfos);
 
 			Token<TokenType>? token;
-			List<string> output = new();
 			while ((token = lexer.GetNextToken()) != null)
 			{
 				string line = $"{token.TokenType}:{token.StringValue}";
 				Console.WriteLine(line);
-				output.Add(line);
 			}
 			Console.WriteLine("{0} lines", lexer.CountNewLine() + 1);
 			Console.WriteLine("{0} ms", DateTime.Now.Subtract(start).TotalMilliseconds);
-
-			string dirName = Path.GetDirectoryName(filePath)!;
-			string fileName = @"result_LexerWithDFA.txt";
-			using StreamWriter fw = new(Path.Combine(dirName, fileName));
-			string result = string.Join("\r\n", output);
-			fw.Write(result);
 		}
 	}
 }
