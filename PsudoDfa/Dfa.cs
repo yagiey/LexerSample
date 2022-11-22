@@ -176,7 +176,7 @@ namespace PsudoDfa
 				{
 					0,
 					new Dictionary<Character, int> {
-						{ new Character(CharacterType.Literal, '+'), 1 },
+						{ new Character(CharacterType.Literal, '-'), 1 },
 						{ new Character(CharacterType.Literal, '0'), 5 },
 						{ Character.Digit1_9, 8 },
 					}
