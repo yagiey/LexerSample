@@ -141,6 +141,199 @@ namespace PsudoDfa
 			return new Dfa(0, new int[] { 4 }, transitionMap, false);
 		}
 
+		public static Dfa GenerateJsonNumber()
+		{
+			/*
+			 <decimal-point>   ::= %x2E                                       ; .
+			 <char_e>          ::= %x65                                       ; e
+			 <char_E>          ::= %x45                                       ; E
+			 <minus>           ::= %x2D                                       ; -
+			 <plus>            ::= %x2B                                       ; +
+			 <zero>            ::= %x30                                       ; 0
+			 <digit1-9>        ::= %x49-57                                    ; 1-9
+			 <digit>           ::= 0
+			 <digit>           ::= <digit1-9>
+
+			 <digits>          ::= <digit><digitsTail>
+			 <digitsTail>      ::= ε
+			 <digitsTail>      ::= <digit><digitsTail>
+			 <digits0>         ::= <digits>?
+
+			 <sign>            ::= <minus>
+			 <sign>            ::= <plus>
+			 <e>               ::= <char_e>
+			 <e>               ::= <char_E>
+			 <exp>             ::= <e><sign>?<digits>
+			 <frac>            ::= <decimal-point><digits>
+			 <int>             ::= <zero>
+			 <int>             ::= <digit1-9><digits0>
+			@<number>          ::= <minus>?<int><frac>?<exp>?
+			*/
+
+
+			DfaTransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>
+			{
+				{
+					0,
+					new Dictionary<Character, int> {
+						{ new Character(CharacterType.Literal, '+'), 1 },
+						{ new Character(CharacterType.Literal, '0'), 5 },
+						{ Character.Digit1_9, 8 },
+					}
+				},
+				{
+					1,
+					new Dictionary<Character, int> {
+						{ new Character(CharacterType.Literal, '0'), 5 },
+						{ Character.Digit1_9, 8 },
+					}
+				},
+				{
+					2,
+					new Dictionary<Character, int> {
+						{ Character.Digit, 6 },
+					}
+				},
+				{
+					3,
+					new Dictionary<Character, int> {
+						{ Character.Digit, 7 },
+					}
+				},
+				{
+					4,
+					new Dictionary<Character, int> {
+						{ new Character(CharacterType.Literal, '+'), 3 },
+						{ new Character(CharacterType.Literal, '-'), 3 },
+						{ Character.Digit, 7 },
+					}
+				},
+				{
+					5,
+					new Dictionary<Character, int> {
+						{ new Character(CharacterType.Literal, '.'), 2 },
+						{ new Character(CharacterType.Literal, 'E'), 4 },
+						{ new Character(CharacterType.Literal, 'e'), 4 },
+					}
+				},
+				{
+					6,
+					new Dictionary<Character, int> {
+						{ new Character(CharacterType.Literal, 'E'), 4 },
+						{ new Character(CharacterType.Literal, 'e'), 4 },
+						{ Character.Digit, 6 },
+					}
+				},
+				{
+					7,
+					new Dictionary<Character, int> {
+						{ Character.Digit, 7 },
+					}
+				},
+				{
+					8,
+					new Dictionary<Character, int> {
+						{ new Character(CharacterType.Literal, '.'), 2 },
+						{ new Character(CharacterType.Literal, 'E'), 4 },
+						{ new Character(CharacterType.Literal, 'e'), 4 },
+						{ Character.Digit, 8 },
+					}
+				},
+			};
+			return new Dfa(0, new int[] { 5, 6, 7, 8 }, transitionMap, false);
+		}
+
+		public static Dfa GenerateJsonStringLiteral()
+		{
+			/*
+			 <digit>           ::= %x48-57                                    ; 0-9
+			 <escape>          ::= %x5C                                       ; \
+			 <quotation-mark>  ::= %x22                                       ; "
+			 <hex-dig>         ::= %x41-46                                    ; A-F
+			 <hex-dig>         ::= %x61-66                                    ; a-f
+			 <hex-dig>         ::= <digit>                                    ; 0-9
+			 <escaped>         ::= %x22                                       ; "    quotation mark  U+0022
+			 <escaped>         ::= %x5C                                       ; \    reverse solidus U+005C
+			 <escaped>         ::= %x2F                                       ; /    solidus         U+002F
+			 <escaped>         ::= %x62                                       ; b    backspace       U+0008
+			 <escaped>         ::= %x66                                       ; f    form feed       U+000C
+			 <escaped>         ::= %x6E                                       ; n    line feed       U+000A
+			 <escaped>         ::= %x72                                       ; r    carriage return U+000D
+			 <escaped>         ::= %x74                                       ; t    tab             U+0009
+			 <escaped>         ::= %x75<hex-dig><hex-dig><hex-dig><hex-dig>   ; uXXXX                U+XXXX
+			 <unescaped>       ::= %x20-21                                    ;
+			 <unescaped>       ::= %x23-5B                                    ;
+			 <unescaped>       ::= %x5D-10FFFF                                ;
+
+			 <char>            ::= <unescaped>                                ;
+			 <char>            ::= <escape><escaped>                          ;\("|\|/|b|f|n|r|t|u(0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F)(0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F)(0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F)(0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F))
+
+			 <chars>           ::= <char><charsTail>                          ;
+			 <charsTail>       ::= ε                                          ;
+			 <charsTail>       ::= <char><charsTail>                          ;
+			 <chars0>          ::= <chars>?                                   ;
+
+			@<string>          ::= <quotation-mark><chars0><quotation-mark>   ;
+			*/
+
+			DfaTransitionMap transitionMap = new Dictionary<int, IDictionary<Character, int>>
+			{
+				{
+					0,
+					new Dictionary<Character, int> {
+						{ new Character(CharacterType.Literal, '"'), 1 },
+					}
+				},
+				{
+					1,
+					new Dictionary<Character, int> {
+						{ new Character(CharacterType.Literal, '"'), 7 },
+						{ new Character(CharacterType.Literal, '\\'), 2 },
+						{ Character.JsonUnescapedChar, 1 },
+					}
+				},
+				{
+					2,
+					new Dictionary<Character, int> {
+						{ new Character(CharacterType.Literal, '"'), 1 },
+						{ new Character(CharacterType.Literal, '/'), 1 },
+						{ new Character(CharacterType.Literal, '\\'), 1 },
+						{ new Character(CharacterType.Literal, 'b'), 1 },
+						{ new Character(CharacterType.Literal, 'f'), 1 },
+						{ new Character(CharacterType.Literal, 'n'), 1 },
+						{ new Character(CharacterType.Literal, 'r'), 1 },
+						{ new Character(CharacterType.Literal, 't'), 1 },
+						{ new Character(CharacterType.Literal, 'u'), 3 },
+					}
+				},
+				{
+					3,
+					new Dictionary<Character, int> {
+						{ Character.HexDigt, 4 },
+					}
+				},
+				{
+					4,
+					new Dictionary<Character, int> {
+						{ Character.HexDigt, 5 },
+					}
+				},
+				{
+					5,
+					new Dictionary<Character, int> {
+						{ Character.HexDigt, 6 },
+					}
+				},
+				{
+					6,
+					new Dictionary<Character, int> {
+						{ Character.HexDigt, 1 },
+					}
+				},
+			};
+			return new Dfa(0, new int[] { 7 }, transitionMap, false);
+		}
+
 		public Dfa(int startNode, IEnumerable<int> acceptingNodeSet, DfaTransitionMap transitionMap, bool ignoreCase)
 		{
 			StartNode = startNode;

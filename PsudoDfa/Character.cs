@@ -16,16 +16,21 @@ namespace PsudoDfa
 		public static readonly Character NotEqual;
 		/// <summary>any character but LF</summary>
 		public static readonly Character AnyCharacter;
-		/// <summary>digit</summary>
+		/// <summary>digit 0-9</summary>
 		public static readonly Character Digit;
-		/// <summary>digit 1 - 9</summary>
+		/// <summary>digit 1-9</summary>
 		public static readonly Character Digit1_9;
+		/// <summary>0-9,a-f,A-F</summary>
+		public static readonly Character HexDigt;
 		/// <summary>character for identifier head</summary>
 		public static readonly Character IdentifierHead;
 		/// <summary>character for identifier</summary>
 		public static readonly Character IdentifierCharacter;
 		/// <summary>neither LF nor CR</summary>
 		public static readonly Character NeitherLfNorCr;
+		/// <summary>%x20-21, %x23-5B, %x5D-10FFFF</summary>
+		/// <see cref="https://www.rfc-editor.org/info/rfc8259"/>
+		public static readonly Character JsonUnescapedChar;
 
 		static Character()
 		{
@@ -33,9 +38,11 @@ namespace PsudoDfa
 			AnyCharacter = new Character(CharacterType.AnyCharacter);
 			Digit = new Character(CharacterType.Digit);
 			Digit1_9 = new Character(CharacterType.Digit1_9);
+			HexDigt = new Character(CharacterType.HexDigt);
 			IdentifierHead = new Character(CharacterType.IdentifierHead);
 			IdentifierCharacter = new Character(CharacterType.IdentifierCharacter);
 			NeitherLfNorCr = new Character(CharacterType.NeitherLfNorCr);
+			JsonUnescapedChar = new Character(CharacterType.JsonUnescapedChar);
 		}
 
 		private Character(CharacterType charType) : this(charType, char.MinValue) { }
@@ -99,6 +106,10 @@ namespace PsudoDfa
 			{
 				return '1' <= ch && ch <= '9';
 			}
+			else if (CharacterType == CharacterType.HexDigt)
+			{
+				return ('0' <= ch && ch <= '9') || ('a' <= ch && ch <= 'f') || ('A' <= ch && ch <= 'F');
+			}
 			else if (CharacterType == CharacterType.IdentifierHead)
 			{
 				return IsLowerCase(ch) || IsUpperCase(ch) || ch == '_';
@@ -110,6 +121,13 @@ namespace PsudoDfa
 			else if (CharacterType == CharacterType.NeitherLfNorCr)
 			{
 				return ch != LF && ch != CR;
+			}
+			else if (CharacterType == CharacterType.JsonUnescapedChar)
+			{
+				return
+					(0x20 <= ch && ch <= 0x21)
+						|| (0x23 <= ch && ch <= 0x5B)
+						|| (0x5D <= ch && ch <= 0x10FFFF);
 			}
 			return false;
 		}
@@ -209,6 +227,10 @@ namespace PsudoDfa
 			{
 				return "<Digit1_9>";
 			}
+			else if (CharacterType == CharacterType.HexDigt)
+			{
+				return "<HexDigit>";
+			}
 			else if (CharacterType == CharacterType.IdentifierHead)
 			{
 				return "<IdentifierHead>";
@@ -220,6 +242,10 @@ namespace PsudoDfa
 			else if (CharacterType == CharacterType.NeitherLfNorCr)
 			{
 				return "<NeitherLfNorCr>";
+			}
+			else if (CharacterType == CharacterType.JsonUnescapedChar)
+			{
+				return "<JsonUnescapedChar>";
 			}
 			else
 			{
